@@ -50,8 +50,10 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Create a session configuration (iPhone 6s and newer models only!)
-        let configuration = ARWorldTrackingConfiguration()
+        // Create a session configuration
+        let configuration = ARWorldTrackingConfiguration.isSupported
+            ? ARWorldTrackingConfiguration() // iPhone 6s and newer models only!
+            : AROrientationTrackingConfiguration() // iPhone 5 and 6
 
         // Run the view's session
         sceneView.session.run(configuration)
