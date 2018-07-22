@@ -69,8 +69,27 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.pause()
     }
     
-    // run this once a plane is detected
+    // detect touches on the screen and interpret it as locations in the real world
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // gets called when a touch is detected in the view or in the window
+        // get the touches from the user and use ARKit to convert it/them to locations
+        if let touch = touches.first {
+            let touchLocation = touch.location(in: sceneView)
+            
+            // convert the 2D location into a 3D location
+            let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
+            
+            if !results.isEmpty {
+                print("touched the plane")
+            } else {
+                print("touched somewhere else")
+            }
+        }
+    }
+    
+    // detect horizontal planes in the real world
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+        // gets called once a plane is detected
         if anchor is ARPlaneAnchor {
             print("plane detected")
             
