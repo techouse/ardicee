@@ -12,6 +12,8 @@ import ARKit
 
 class ViewController: UIViewController, ARSCNViewDelegate {
 
+    var diceArray = [SCNNode]()
+    
     @IBOutlet var sceneView: ARSCNView!
     
     override func viewDidLoad() {
@@ -82,19 +84,43 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                                                    // to prevent our dice from being half sunken into the plane to the Y axis the radius of the diceNode's boundingSphere
                                                    y: hitResult.worldTransform.columns.3.y + diceNode.boundingSphere.radius,
                                                    z: hitResult.worldTransform.columns.3.z)
+                    diceArray.append(diceNode)
+                    
                     sceneView.scene.rootNode.addChildNode(diceNode)
                     
-                    // we only need to rotate the X and Z axis and not the Y axis, because that would not change the face of the die
-                    let ranomdX = Float(arc4random_uniform(4) + 1) * (Float.pi/2)
-                    let ranomdZ = Float(arc4random_uniform(4) + 1) * (Float.pi/2)
-                    
-                    diceNode.runAction(SCNAction.rotateBy(x: CGFloat(ranomdX * 5),
-                                                          y: 0,
-                                                          z: CGFloat(ranomdZ * 5),
-                                                          duration: 0.5))
+                    roll(dice: diceNode)
                 }
             }
         }
+    }
+    
+    func rollAll() {
+        if !diceArray.isEmpty {
+            for dice in diceArray {
+                roll(dice: dice)
+            }
+        }
+    }
+    
+    func roll(dice: SCNNode) {
+        // we only need to rotate the X and Z axis and not the Y axis, because that would not change the face of the die
+        let ranomdX = Float(arc4random_uniform(4) + 1) * (Float.pi/2)
+        let ranomdZ = Float(arc4random_uniform(4) + 1) * (Float.pi/2)
+        
+        dice.runAction(SCNAction.rotateBy(x: CGFloat(ranomdX * 5),
+                                          y: 0,
+                                          z: CGFloat(ranomdZ * 5),
+                                          duration: 0.5))
+    }
+    
+    @IBAction func rollAgain(_ sender: UIBarButtonItem) {
+        rollAll()
+    }
+    
+    // shake gesture
+    override func motionEnded(_ motion: UIEventSubtype, with event: UIEvent?) {
+        print("device was shaken")
+        rollAll()
     }
     
     // detect horizontal planes in the real world
