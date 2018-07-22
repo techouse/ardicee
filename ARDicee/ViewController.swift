@@ -73,6 +73,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             // convert the 2D location into a 3D location
             let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
             
+            // if there was a touch detected
             if let hitResult = results.first {
                  // Create a dice new scene
                 let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
@@ -82,6 +83,15 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                                                    y: hitResult.worldTransform.columns.3.y + diceNode.boundingSphere.radius,
                                                    z: hitResult.worldTransform.columns.3.z)
                     sceneView.scene.rootNode.addChildNode(diceNode)
+                    
+                    // we only need to rotate the X and Z axis and not the Y axis, because that would not change the face of the die
+                    let ranomdX = Float(arc4random_uniform(4) + 1) * (Float.pi/2)
+                    let ranomdZ = Float(arc4random_uniform(4) + 1) * (Float.pi/2)
+                    
+                    diceNode.runAction(SCNAction.rotateBy(x: CGFloat(ranomdX * 5),
+                                                          y: 0,
+                                                          z: CGFloat(ranomdZ * 5),
+                                                          duration: 0.5))
                 }
             }
         }
